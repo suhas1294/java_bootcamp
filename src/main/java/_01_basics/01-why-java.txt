@@ -1,0 +1,100 @@
+In c/c++ user can manage memory, But in Java there is a concept called 'garbage collection' where JVM managers memory. programmer need not manage memory.
+
+Interpreter converts source code into results
+Interreter is similar to virtual machine. it works on fetch-and-execute cycle
+
+compiler converts source code into:
+1. machine code (binary)
+2. byte code (in case of java)
+3. source code (ex: clojurescript compiler converts clojurescript into javascript)
+
+compiled language : 
+    pros: fast execution
+    cons: platform dependent
+interpreted language:
+    pros: platform independent
+    cons: slow execution
+
+Java combines best of both worlds:
+    interpretted languages:
+        source code -> interpreter -> results
+    java code:
+        source code -> java compiler -> byte code -> java interpreter -> machine code
+        Here Java interpreter is nothing but JVM(java virtual machine)
+        JVM is platform specific.
+    
+Hello.java - (javac Hello.java) -> Hello.class -> (java Hello) -> JVM -> executed!
+
+the command ('java Hello') will create an instance of JVM 
+CPU loads JVM as soon as we execute 'java Hello' and then JVM execute Hello.class
+
+Why interpreting byte code is faster then interpreting source code ?
+    byte code is compact, compiled and optimized
+    JVM also performs additional optimisation called 'JIT(just in time)compilation' - done at execution time
+
+Each java program requires a new instance of JVM to execute the program
+
+what happens when we run 'java Hello'
+    instance of JVM will be created
+    JVM will utilize low level system memory - lets call it 'run time data areas' - AKA JVM memory
+    JVM has to now load Hello.class which is in memory - For this JVM invokes a component called 'CLASSLOADER'  - loads corresponding byte code into memory.
+    When we say memory - we have 'heap' and 'method area'
+    byte code is verified by component called 'byte code verifier' - to ensure loaded classfile is not corrupted
+    Once byte code is verified, then it can be dafely executed by 'Execution engine'
+    'Execution engine' includes : 'java interpreter' and 'JIT compiler'
+    'Execution engine' - core part of JVM which gives us speed and platform independence
+    'Garbage collector' is component used for automatic memory management
+    Garbage - things that are no longer useful
+    'SEcurity manager' is responsible for security : ex: if you want to restrict bytecode from accessing your file system - security manager make sure to run this code by running it in a seperate environment called 'sandbox'
+
+How does JIT works ?
+    1. it identifies frequently used code - ts called 'hot spot'
+    2. JIT converts this hot-spots into machine code
+    3. this machine code is cached - this helps in faster execution
+
+Specification:
+    instructions on how to run:
+Implementations:
+    those who implement above specifications, ex:
+        Oracle java
+        AxureJDK,
+        open jdk
+    
+JLS ( java language specification):
+    Defines syntax and semantics of language
+JVMS ( java virtual machine specification)
+    How a JVM should work
+Java API Specification
+    How a library should work
+
+What does JDK includes:
+    JVM
+    JAVA API (actual java code)
+    Dev tools (Java compiler)
+
+JDK Is also referred to as SDK : Software Development Kit
+JRE : JVM and Java API are collectively called as Java Runtime Environment
+Once opan a time, oracle used to offer seperate JRE : Only run java application
+From Java se 11 Oracle stopped offering ONLY JRE
+
+        
+Different JDK providers :
+        Oracle java
+        AxureJDK,
+        open jdk
+All above JDK providers are all based on same code, This source code is called OPEN JDK.
+Its was first developed by oracle and later open sourced.
+
+So, OpenJDK contains (API + Hotspot JVM)
+Hotspot JVM is written in c++
+
+JSR : Java specification requests : It describes what features were added in a particular release. 
+
+Environmental variable called 'Classpath':
+    An Environmental variable is one whose value is visible to entire environmenta, i.e., processes running in that system
+
+'Classpath': path on file system for locating java classes, it can include more then 1 path.It is specific to java.
+Ex: if you run 'java Hello', java interpreter has to know where it has to locate the 'Hello' Program i.e., Hello.class. For locating it may use classpath
+    Ex: if class path  = c:\foo;c:\bar
+    Then it will first check if Hello.class is there in c:\foo, if its not there, it will check in c:\bar
+    Basically, if your .class file is located somewhere else, you need to add that path to classpath environmental variable.

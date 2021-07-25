@@ -1,0 +1,199 @@
+Functional programming:
+    From Java8 we can also send behavior as method arguments.
+    imperative programming(old way if writing program) vs declarative programming(chaining methods)
+
+Lambdas
+Functional interfaces (lambdas work with only functional interfaces)
+method references
+streams
+
+Lambdas:
+    its is essentially a function which can be passed around.
+    It is not associated to any class.
+    It is a function by itself.
+    They are anonymous function.
+    we can pass it around.
+    it is an expression.
+    syntax:
+        (Type param1, Type Param2, ...) -> {
+            statement-1
+            statement-2
+            ..
+            retur something;
+        }
+    A lambda function is assigned to a variable whose type is a functional interface. Typically it would be method parameter.
+    The functional interface will always have ONLY one method. since they contain only one method they are also called SAM: Single Abstract method interface.
+
+    Set<String> set = new TreeSet<>(new Comparator<String>(){
+        public int compare(String s1, String s2){
+            return s1.length() - s2.length();
+        }
+    })
+
+    TreeSet<String>((String s1, String s2) -> {
+        return s1.length() - s2.length();
+    })
+    TreeSet<String>((s1, s2) -> {
+        return s1.length() - s2.length();
+    })
+    TreeSet<String>((s1, s2) -> s1.length() - s2.length() )
+    Lambda expression can only be implementation of functional interface.
+
+
+    You can shadow an element ONLY in two places:
+        anonymous class
+        local class
+    Cannot shadow variable in lambda expression.
+
+______________________________________________________
+Predicate, (Bi)Function, unary operators
+
+Standard functional interfaces:
+    From java 8 we have statndard library for functional interfaces.
+    It has two main interfaces: Predicate and Function.
+    Predicate: SOme kind of filtering / criteria to move on to next phase that is Function phase.
+    Function : buisness logic is written here(suually data transformation)
+
+    Ex: 
+        predicate: From the list of downloaded web pages, take only those which belog to adult category.
+        function: 
+            transformation-1: remove the html tags
+            transformation-2: remove the stop words.
+        Predicate interface has test method which returns boolean
+        Function interface has apply() method and returns the 'R' 
+        Composing functions: stitching functions: using 'andThen' keyword.
+
+    Consumer & Supplier interfaces:
+        Consumer: to consume somtehing, it has only one method 'accept'
+        Supplier: to return somtehing, it has only one method 'get'
+
+        When we say Function<String, boolean> it means : a function that takes string and returns boolean.
+        Supplier<String> means this method is going to supply string. (remember supplier interface has a get mehthod which needs to be implemented)
+______________________________________________________
+
+Method Reference:
+    used for passingaournd functionalities just like in case of lambdas
+    target type for method references is also functional interfaces
+    Syntax: 
+        Classname::staticMethod.
+        ObjectReference::instanceMethod
+        Classname::instanceMethod
+    There are 3 kinds of method references:
+
+Constructor references:
+    used for constructing objects.
+    Syntax:
+        Classname::new
+    
+    // implementation:
+    Supplier<String> supplier = () -> new String()
+    Supplier<String> supplier = String::new
+    // calling in client code:
+    sout("hello, " + supplier.get())
+
+    // how to give arguments ?
+    // supplier does not take any parameter, function interface takes parameter
+    // implementations:
+    Function<String, String> function = s -> new String(s)
+    Function<String, String> function = String::new // automatically it takes arg based on arguments.
+    // calling in client code
+    sout(function.apply("argument"));
+
+______________________________________________________
+
+Streams:
+    methods + lambdas + method references
+    Stream: its an interface in java.util.stream
+    stream(): its a method in collections interface itself. it returns an instance of stream Interface.
+    Its like performing SQL like operations on collections
+    common operations in sql:
+        where clause
+        group by
+        order by
+        count, sum, avg etc.
+    common operations in stream api:
+        filtering
+        grouping
+        sorting
+        sum & avg
+        add, get, contains
+    Its PARALLELIZABLE
+    
+    ex: books.stream()
+            .filter(book -> book.getRating() > 4.5)
+            .collect(groupingBy(Book::getCategory))
+        
+
+    A stream is not a data structure.
+    It cannot mutate data (i.e., it cannot alter original array)
+
+    stream operation classification:
+        filtering               (lazy intermediate operations)
+        mapping                 (lazy intermediate operations)
+        slicing                 (lazy intermediate operations)
+        matching and finding    (eager terminal operations)
+        reduction               (eager terminal operations)
+        collect                 (eager terminal operations)
+
+    slicing:
+        distinct, limit and skip are 3 operations under slicing.
+    
+        books.stream()
+            .filter(b -> b.getRating() > 4.5)
+            .distinct // distinct will internally use equals, so in Book class, you need to override rquals and hashcode method.
+            .limit(5)
+            .skip(5) // skip first 5 elements
+            .peek(d -> sout(d.getTitle())) // see what current stream element is
+            .map(d -> d.getTitle())
+            .forEach(System.out::println);
+            // .collect(Collectors.toList());
+        
+        matching operations:
+            matching stream elements to certain criteria.
+            if it matches, boolean will be returned. there are 3 matching operations:
+                anyMatch
+                allMatch
+                noneMatch
+        finding operations:
+            they are typically used with filter operations
+            They dont not take any method parameters
+                findAny
+                findFirst
+
+            orElse 
+            orElseGet
+            ifPresentOrElse
+
+        Reduction operations:
+            reduce
+                reduce into single value
+                do things like max or min
+                Its a type of immutable reduction
+                Arrays.stream(new Integer[]{1,2,3,4}).reduce(Integer::sum)
+            collect
+                collect to any container(set, map, list, String builder, summary object) [reduce input into container.]
+                we can also do thigns like grouping.
+                Its a type of mutable reduction
+                Mutable Recuction: 
+                    we need a supplier, 'supplier' is an interface
+                    we also need combiner
+                Collector:
+                    supplier: creates new container, returns Supplier<A>
+                    accumulator: accumilates into container. returns BiConsume<A, T>
+                    combiner: combine two result containers. returns BinaryOperator<A>
+                    finisher: optionally transform container object, returns Function<A, R>
+                Typical collections:
+                    Collection: toList, toSet, toCollection
+                    Grouping & Multilevel: grouping, toMap, groupingBy, partitionBy, mappingBy
+                    reducing and summarizing: maxBY, summingInt, averagingInt, joining()
+
+        All matching & finding operations are short circuit operations
+
+______________________________________________________
+
+Optional class:
+    Its a container class which would have either the matching element OR it will not have any element.
+
+    isPresent()
+    Optional.of(books.get(0))
+    Optional.ofNullable(books.get(0))

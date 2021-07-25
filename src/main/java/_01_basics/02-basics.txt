@@ -1,0 +1,305 @@
+1. Normally we will name class name  = file name
+2. there can be only one public class in a file
+3. normally we dont write multiple classes in single file - we can do nested classes
+
+If 'public' is not there , code gets compiled BUT WONT GET EXECUTED.
+
+Why are we using public for only one class?
+    It is how it has been designed and I am not sure if the reason is  documented. But here is a good reason on why it is done that way. Let's  assume we have two public classes Y & Z in a  file named Y.java.  Now, let's assume a different class X is using Z.  Now, when we compile  X, the compiler first tries to locate Z.class and if it cannot find it,  then it tries to locate Z.java so that it can compile it automatically.  But, since we only have Y.java, the class Z  cannot be located and hence  we get a compilation error. So, we do need  to place them in separate  files.
+
+
+Why Object oriented language ?
+    Helps model real world scenarios.
+
+Object contains:
+    state (variables)
+    behavior (what the entity can do)
+    nested classes (less commonly used)
+    interfaces (less commonly used)
+
+class is a blueprint OR specification
+Variable declaration:
+    literal:
+        int i = 1000
+    expression:
+        int i = x;
+    
+Direct assignment statements cannot appear at class level:
+    ex: count = 23;
+    They can appear inside members of class such as methods.
+
+________________________________________________
+Error: Variable 'id' might not have been initialized.
+
+class Student{
+    
+    // int id; // variables declared in class scope would be getting default values, so this works
+    
+    void compute(){
+        // variables declared inside methods are called local variables
+        int id; // local variables do not get any default values
+        int nextId = id + 1;
+        sout(id);
+        sout(nextId);
+    }
+}
+
+- variables declared at class level are called instance variables
+- Static variables can also be declared at class level, they also get default values
+- variables declared inside methods are called local variables
+- variables declared inside methods has to be initialized
+________________________________________________
+
+value Assignments cannot be at class level, at class level we cannot have direct assignments
+
+class Student{
+    
+    int id;
+    id = 1000; // this gives error !!
+    
+    void compute(){
+        id = 1000 ; // this works, we are re-initializing here
+        int nextId = id + 1;
+        sout(id);
+        sout(nextId);
+    }
+}
+________________________________________________
+
+8 primitive data types:
+    - boolean
+    - number
+        -integer
+            - byte (2^7) : 256 : -128 to 127
+            - short (2^13) : [-32,768 - 32,767]
+            - lint (2^31)
+            - long (2^63)
+        -float
+            - float
+            - doublr
+        -character
+            - char
+
+________________________________________________
+
+From Java 7 onwards:
+    long phone = 123_456_789L; // for readability
+
+To see min and max:
+    int i = Integer.MIN_VALUE
+    int j = Integer.MAX_VALUE
+
+Here 'Integer' is a 'boxed promitive' and 'int' is a primitive
+All primitive data types has a corresponding boxed primitive
+
+"Int" literal: ( int literal can be assigned to int, short and byte)
+    int i = 10;
+    byte b = 100;
+    short s = 100;
+"long" literal:
+    long a = 999_999_99;
+
+How to declare binary number ? (possible from java 7 onwards)
+    int j = 0b0100; //this will be 4 in decimal
+
+Float : 32bit : -3.4e38 to 3.4e38 : 0.0f (default) : 6-7 (precision digits)
+Double : 64bit : -1.7e308 to 1.7e308 : 0.0d (default) : 15-16 (precision digits)
+
+float gpa = 3.8f; // 'f' mandatory
+double gpa = 3.2e4; // 3.2 x 10^4
+
+sout(1 - 0.9); // 0.0999999999
+sout(0.1 + 0.2); // 0.300000000004
+
+reason is numbers like 0.1, 0.2 etc cannot be represented accurately due to format computers use. (IEEE754 format)
+
+double price = 1000;
+double discountPrice = 0.9; //(9%)
+double discountAMount = price * discountPrice;
+sout(price - discountAMount) // expected 100
+sout(price * (1 - discountPrice)) // 99.999
+
+Hence while dealing with Money, use BigDecimal class (mostly used in ecommerce websites)
+
+char : 16 bits depth : 0 to 2^16-1 (i.e., 65,535) : defaults to '\u0000'
+
+java uses utf-16 encoding scheme
+
+char variables can be initialised with :
+    unicode escape character (ex: '\u0042')
+    char literal (ex: 'a')
+    int leteral (ex: 65) // prints 'A'
+
+Local variables do not get a default value.
+
+
+Reference Data types:
+    Student s = new Student()
+
+    Memory for reference variables 's'
+    Memory for Object 'new Student'
+    '=' is used for assigning address of object to variable
+    Objects are stored in 'heap' memory of JVM
+
+Types of statements:
+    Declararion statements, ex: int count = 100;
+    Expression statements:
+        count = 36;
+        getCount();
+        count++;
+    Control flow statements, ex: if, for etc
+Note that only Declaration statements can be there at Class level.
+
+what all declarations can be there at class level ?
+    Field declaration
+    method declaration
+    constructor declaration
+    nested class and interface declaration
+    instance and static initializers
+
+Inside a static method, we cannot access states
+Hence inside main method you cannot call a static method which uses state.
+Cannot access instance variable from a static method.
+
+a) Accessibility from Static Methods:
+
+    Cannot directly access instance variables/methods defined in the same class as the static method
+
+    Can directly access static variables/methods defined in the same class
+
+    Can access anything via an object reference. So, from a static method by using an object reference, we can access instance variables/methods
+
+b) Accessibility from Instance Methods:
+
+    Can access anything from an instance method. So, we can even access static variables/methods defined in the same class as the instance method.
+
+________________________________________________
+
+Fron java 5, we have a concept of varargs, variable length arguments
+
+Constructor overloading:
+    class Student{
+        public Student(){}
+        public Student(int id, String name){
+            this.id = id;
+            this.name = name;
+        }
+        public Student(int id, String name, bool isINternational){
+            // Rules:
+            // this(...) has to be first line
+            // only one pre-constructor (cannot be called twice)
+            // no recursive invocation
+            // no instance variables as arguments (dont pass instance variable while calling this())
+
+            this(id, name, true); 
+        }
+    }
+
+________________________________________________
+
+pre and post operators
+    pre and post increment is closely related to assignment
+
+    int x = 5;
+
+    int y = x++; // y = 5, x = 5 + 1
+
+    // post :  y is first assigned x's value and then x's value is incremented
+    int y = x ++; is nothing but : {
+        y = x;
+        x = x + 1
+    }
+
+    // pre
+    int y = ++x; is nothing but : {
+        x = x + 1
+        y = x;
+    }
+________________________________________________
+Logical operators:
+    When && and || is used together, '&&' has highest priority
+    A && B  && C || D is evaluated to (A && B  && C) || (D)
+________________________________________________
+
+A return statement is mandatorily expected in all possible paths
+
+Switch expression can be ONLY any of these three:
+    integer
+    string (since java 7)
+    enum
+value of case must be know for compiler, cannot use variables for case.HOwever, it can also be:
+    Integer
+    String
+    Constant, declared with final keyword and it should be initialised
+
+________________________________________________
+Foor loop :
+    Initialization is optional provided declaration is outside
+
+valid for loops declarations:
+    for(int i; ;)
+    for(int i=0, j=0; ;)
+invalid for loops declarations:
+    for(int i=0; int j=1)
+    for(int i=0; double j=1)
+
+valid for loop:
+    for (int i=0; i < MyArray.length; System.out.println(MyArray[i]), i++ );
+    for (int i=0; i < MyArray.length; System.out.println(MyArray[i++])); // more compact
+
+reversing array using for loop:
+    int arr = {1,2,3,4,5,,6,7,8,9}
+    // for( int i=0, j=arr.length-1;  i < arr.length/2 ; i++, j-- ){
+    // for( int i=0, j=arr.length-1, middle = arr.length/2;  i < middle ; i++, j-- ){
+    for( int i=0, j=arr.length-1;  i < j ; i++, j-- ){
+        swap(arr[i], arr[j])
+    }
+
+    // for each syntax
+    for (int i : MyArray){
+
+    }
+
+    // when we can't use for-each
+    - when we want index value inside loop
+    - backward iteration
+
+________________________________________________
+
+Do while:
+    purpose : Run atleast once
+        do {
+
+        }while(condition-expression);
+    for-loop mimicing while loop:
+        for(;;){
+            //yourWordk()
+        }
+
+    outermost: for(i = 0; i < 10 ; i++){
+        for(j = 0; j < 10 ; j++){
+            if(i == 5){
+                break outermost;
+            }
+        }   
+    }
+
+________________________________________________
+
+JAVA_HOME : where java lives in your system
+path : where to find 'javac' and 'java' executables ? usually JAVA_HOME/bin
+classpath : to say java compiler where external libraries are located, classpath doesnot apply for standard library
+
+
+Lets say we have two files:
+    Custom.java inside ~/workspace/custom/src
+    CustomTest.java inside ~/workspace/custom/src/test
+&   CustomTest.java requires importing Custom.java in its code.
+Then, to compile CustomTest.java, we need to specify classpath of Custom.java
+    javac -classpath ~/workspace/custom/src CustomTest.java
+
+________________________________________________
+
+String concatenation:
+    String builder (latest, introduced in java 5)
+    Stirng Buffer (was used before builder class)

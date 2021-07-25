@@ -1,0 +1,114 @@
+Refer JVMInternals.java inside basics.
+
+Lifetime of a type inside JVM
+run time data areas
+class file anatomy
+
+Lifetime of a type inside JVM
+    JVM Memory areas:
+        * method area
+        * heap
+        Per thread:
+            - JVM stack 
+            - PC
+            - Native Method stack
+
+Wha happens when a .class file is access for very first time ? JVM does following
+    1. laods class - done by classloader (LOADING PROCESS)
+        * classloader searches for classpath where it can find this class, 
+        * loads corresponding bytecode into memory - 
+        * creates class object
+        * class object has meta information about this class (class name, names of super classes, method names)
+        * class object is created only once when accessed for very first time
+        * on subsequent access, classloader will use class object from memory
+        (LINKING PROCESS):
+        * verification: check if input class is welll formed or not, verification is performed by bytecode-verifier
+        * preparation: allow space for static variable
+        * resolution(optional step): resolving referenced classes
+        * classes are being loaded at run time,hence its called dynamic linking
+        (INITIALIZATION):
+        * initializes variable
+        * overrides default values with user given values
+    2. well formed ? execute : reject
+
+    3. allocate space for static variables, initialize those variables with default values
+    4. load any referenced classes (if any other class is inside .class file)
+    5. initialize (static)variables (override default values with user given values) (given values might be part of decalaration/ static initializer block/ instance initializer block)
+
+
+When a class loader is accessed:
+    new instance is created
+    invoking static method
+    accessing static field is accessed, (exception: compile time constants)
+
+
+java -verbose:class : to check type lufe cycle
+
+life cycle trace:
+    class is loaded (from trustworthy to untrustorthy locations)
+    security check is done by byte code verifier
+    static initializer block is called 
+    main method is invoked.
+    before superclass constructor, super class instance initializer will be called
+
+
+Reflection:
+    java.lang.Reflection and class 'Class' provides us the meta information of a class.
+
+Different Accessing class objects:
+    objRef.getClass() , ex: "foo".getClass()
+    Class.forName(String className), ex: Class.forName("java.lang.String") (doesn't work with primitives)
+    Class literals, ex: String.class, int[][][].class, void.class
+
+Garbage collection:
+    System.gc()
+    Runtime.getRuntime().gc()
+
+process of gc has 2 steps:
+    identify abandoned objects, by one of the following ways
+        Mark(find live objects) and sweep algorithm: 
+        mark-sweap-contact
+        mark and copy
+    reduce pause time
+
+Generational collection:    
+    old and new generation of objects:
+        old: objects which die young in application cycle
+        new: objects that almost/lives for ever.
+    
+    how to tell jvm use a particular garbage collector ?
+    java -xx:+UseConcMarkSweepGC ClassName
+
+Memory leak:
+    -Xms13m -Xmx13m -XX:+PrintGCDetails -XX:+UserSerialGC
+    -Xms13m: mimium amount of memory that would be allocated to heap memory : 13 mb
+    -Xmx13m: max amount -----"----"-------"----"-------"----"--
+    -XX:+UserSerialGC: 
+
+    ensure there are no obsolete object references
+
+byte code instruction set:
+    Store instruction:  pops data from operand stack and stores it at specified index in local variables array
+    load instruction:   opposite of Store instruction
+    invokeSpecial:      invoking instance initializing method(nothing but constructors), private methods, and methods of super class via super keyword
+    invokeVirtual:      invoking instance methods.
+    invokeStatic:       involing static methods
+    
+    both 'invokeSpecial' and 'invokeVirtual' first pop the top element in operand stack of current method and store it at 0th index of local variables array of invoked method
+
+
+Method table is consulted for invoking ONLY instance methods.
+
+_____________________________________________
+how many objects are eligible for garbage collection after the last statement in method foo() is executed, but before the control returns from the method foo().
+public void foo() {
+   Student[] students = {new Student(), new Student(), new Student()};
+   removeLast(students);
+   Student student = students[0];
+   students[0] = null;
+}
+public void removeLast(Student[] students) {
+   students[students.length-1] =  null;
+}
+Only Student object referenced by last array element is eligible for GC. Student object referenced by array element at 0th index is not eligible for GC as the variable 'student' has an active reference to that object due to 3rd statement.
+_____________________________________________

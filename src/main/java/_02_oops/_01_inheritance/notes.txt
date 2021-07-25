@@ -1,0 +1,10 @@
+How to decide which one is super class and which one is subclass ?
+    IS-A test
+    HAS-A
+
+Polymorphism:
+    User user = new Editor()
+    Reference type  objectIdentifier = ActualObject
+
+    Compiler looks at Reference type while compiling, But at runtime -
+    JVM starts looking for object type from bottom of inheritance tree to decide which method to be called.

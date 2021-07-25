@@ -1,0 +1,149 @@
+why ?
+	we need optional capability (protocol)
+	we also need polymorphism
+
+Super type defines a common protocol
+	(myself and my subtypes have these kinds of methods... / specifying a contract)
+
+	supertype - class
+	contract - all public & protected methods.
+
+	supertype - abstract class
+	contract - all public & protected abstract methods.
+
+	supertype - interface
+	contract - mostly only public abstratc methods
+
+	From java 8, interfaces can also have concrete methods
+
+Interfaces: (its a pure contract)
+	will not have any state (variabels)
+	Non instantiable
+	no constructors
+	implementations would be provided by subclasses
+	members cant be private or protected
+
+what all interface can include ?
+	static final fields (variables decalred are by default public static final)
+	No instance variables
+	abstract methods
+	concrete methods (from java8)
+		default methods
+		static methods
+	nested types (nested classes or nested interfaces)
+	interface can extend other interface
+
+
+class can only implement interface, but cannot extend interface
+interface can extend multiple interfaces
+	ex: public interace BlockingQueue extends BlockingQueue, Deque{...}
+
+Abstract subclass need not implement abstract methods
+abstract class can also implement an interface
+
+
+
+When to use interface vs abstract class ?
+
+	interfaces can be classified into two types:
+		representative interfaces
+			defined representative behavior of subclasses
+			include one or more implementation
+			represents core functionality of subclasses
+			ex: List : ArrayList, LinkedList, Vector
+		mixins
+			Defines additional capabilities of subclasses
+			very generic, sub classes can come from anywhere
+			from a naming convention standpoint, mixins interfaces end with 'able' keyword (ex: comparable, clonable)
+
+When to prefer interfaces ?
+	mixins
+	representative behavior without state
+
+When to prefer abstract class ?
+	if type is defining core identity of subclasses or even regular concrete class (representative behavior with state)
+	provide skeletal implementation of interface
+
+Ex: ArrayList extends AbstractList implements List, Clonable, Seralizable;
+here 'AbstractList' is skeletal implementation of 'List' interface.
+As per naming convention skletal implementation goes with 'AbstractInterfaceName', ex: "AbstractList"
+
+
+Marker interfaces:
+	No methods
+	marks a class as having some property
+
+Default methods:
+
+public interface C extends A {
+	void foo();
+	default bar(){
+		sout("implement me !")
+	}
+}
+
+Summary if default methods:
+	1. default keyword can be used only in interfaces, not in classes
+	2. they are instance methods (cannot be accessed via interface name)
+	3. static methods can be defined, this should be accessed via interface name inside concrete class
+	4. Conflicts resolving strategy:
+			when we have two identicaly method definitions in two super types. (leads to diamond problem)
+			1. classes win over interfaces (super class method > default method in interface)
+				- default methods cannot override Object's method.
+			2. sub-interface wins over super insterfaces
+			3. Manual resolution:
+					when one interface provides default method, and there is a second independent interface
+					that provides either an abstract method or a default method by same name. In this case concrete class
+					which is implementing both interfaces, must provide an implementation for that method.
+
+	Explicit invocation of default method in a super interface.
+		Super keyword:
+			parent.super // works
+			grapdparent.super // does not work
+			only super // does not work
+		Can re-abstract default methods (if sub type thinks if default implementation is not good enough)
+		can't use final and synchronized keyword with default methods
+
+Functional interfaces:
+	interfaces which has ONLY one abstract metthod.
+
+
+Source compatanility: If you recompile and code still works then its source compatiblity
+binary compatability: if your code works without recompiling its called binary compatability
+
+_______________________________________________________________
+
+interface Sharable{
+	String getitemData();
+}
+
+class Bookmark{}
+
+class Book extends Bookmark implements Sharable{
+	String getitemData(){...}
+}
+class WebLink extends Bookmark implements Sharable{
+	String getitemData(){...}
+}
+class Movie{}
+
+Sharable obj = new Book();
+Bookmark obj = new Book();
+Sharable obj = new Movie(); // NOT POSSIBLE !
+Sharable obj = new Sharable(); // NOT POSSIBLE !
+
+void go(Sharable s){
+	String data = s.getItemData();
+	..
+}
+go(new Book()) // works fine
+go(new Weblink()) // works fine
+go(new Movie()) // error!!
+
+Interface can only be reference type, can NEVER be object type
+
+Analogy:
+	Doctor having degrees: degree can be compared with interfaces, Doctor is our subclass,
+	by knowing degrees, we know capabilities of doctor
+	by knowing which classes is our main class implementing, we know what our class can do.
+

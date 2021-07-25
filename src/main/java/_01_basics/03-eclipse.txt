@@ -1,0 +1,18 @@
+shortcuts:
+    cmd + shift + t (open file)
+    cmd + o (shows outline of a class) / right click inside file -> show in breadcrumb
+    cmd + shuft + g : show method usage
+    ctrl + h : search options
+    ctrl + shift + o : auto import
+    cmd + shift + f : reindent
+
+
+Windows:
+    Ctrl + Shift + T ~ Searching for a type
+    Ctrl + O ~ Quick outline
+    Ctrl + T ~ Quick type hierarchy
+    F3 ~ Navigate to a method
+    Ctrl + Shift + G ~ Method invocations
+    Ctrl + ALT + H ~ Method call hierarchy
+    Ctrl + H ~ Search console
+    Ctrl + Spacebar ~ Keyword (e.g., foreach) followed by this shortcut will auto-insert a template

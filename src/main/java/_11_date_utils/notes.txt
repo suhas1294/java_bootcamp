@@ -1,0 +1,33 @@
+In java8 we have brand new date and time api.
+UTC: 
+    Coordinated universal time.(time keeping for civil world)
+    used by computed servers, ATC, space station etc.
+    typical utc day has 86400 seconds
+    measured by automic clocks
+    BIPM finalizes time.
+
+Legacy code:
+    java.util.Date
+    java.util.Calender
+    java.util.GregorianCalender
+    java.util.TimeZone
+
+    java.util.Date
+        For June 8th 2016, we represent like: new Date(116, 5, 8), (uses 1900 as start of year)
+
+Commonly used classes in New api:
+    All these classes implement Temporal class.
+        LocalDate
+        LocalTime
+        LocalDateTime
+        ZonedDateTIme
+        Instant
+    Below clsses implements TemporalAmount
+        Duration & Period
+            (duration b/w two points of time, it will be diff b/w two instances of Instant class)
+            Period: interval b/w two dates, (ex: compute age of person)
+            period is associated with date and duration is associated with time.
+    
+    ISO-8601 format: [date]T[time][zone offset]
+    ex: 2017-07-03T01:00-7:00[Ametica/Los_Angeles]
+    2017-07-03T01:Z[UTC] : z implies UTC/GMT

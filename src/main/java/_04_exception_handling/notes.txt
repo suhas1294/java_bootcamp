@@ -1,0 +1,42 @@
+how they are represented and handled ?
+An exception is simple an object of class java.lang.Throwable OR one of its sub classes
+
+'java.lang.Throwable' is super class of all exception related classes
+
+important keywords:
+    throws
+    throw
+    try-catch
+
+exceptions can be addressed polymrphically:, refer PolymorphicHandling.java
+
+Rules:
+
+    If the super class method does not declare an exception, then the overriding method in the subclass cannot declare a checked exception, but can declare an unchecked exception.
+
+    If the super class method declares a checked exception, then the overriding method in the subclass can declare same exception or a subclass exception or no exception at all, but cannot declare parent exception.
+
+    If the super class method declares an unchecked exception, then the overriding method can declare any unchecked exception or no exception at all, but cannot declare a checked exception.
+
+try-with-resources: (introduced in java 7) [AUTOMATIC RESOURCE MANAGEMENT]
+    resources could be like operating system resources like file handles
+
+    try(FileInputstream in = new FileInputstream(fileName)){ // 'in' is final here.
+        // read data
+    } catch(FileNotFoundException){
+        // handle
+    } catch(IOException e){
+        // handle
+    }
+
+    try(java.lang.AutoClosable){
+
+    }catch(){...}
+
+
+CustomException ce = new CustomException();
+ce.initCause(e) // e is low level exception, we are encapsulating a low level exception inside CustomException.
+
+
+use Exceptions for public methods
+use Assertions for non-public methods

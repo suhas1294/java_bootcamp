@@ -1,0 +1,20 @@
+Overriding rules:
+
+concepts of early binding and late binding.
+
+static variables and static methods are early binded. (at the time of compilation)
+instance variables and instance methods are late binded (at the run time, as instances are created at runtime)
+
+Method binding:
+	invokestatic (for static methods)
+	invokeVirtual (for instance method)
+
+what is not overridden ?
+	final methods
+	fields : instance & static
+	static methods : ALWAYS super class's static method will be called since it is early bound during compilation time.
+
+
+Prevent inheritance :  use final keyword on class name
+prevent inheritance & instantiation : make the constructor private. (Math utility class)
+

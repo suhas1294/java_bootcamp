@@ -1,0 +1,24 @@
+Scenario:
+	we want inheritance (so we cant use final keyword / private constructor)
+	we dont want method implementation
+
+nature of abstract class:
+	to generic to be instantiated
+	contains methods for which there is no implementation
+	defines contract/protocol for its subclasses
+	uses 'abstract' keyword
+	'abstract' keyword can be used at method level as well. (cannot have absrtact method in non abstract class)
+	implementation should be provided by subclasses
+	cannot be decalred static
+	useless unless its extended.
+	can contain 1 or more concreate methods(implemented methods)
+
+Abstract subclass
+	Even sub class coule be decalred subclass
+	subclass can override methods
+	can contain 1 or more concreate methods(implemented methods)
+
+concrete subclass:
+	must override unimplemented methods
+
+Item 20: prefered class hirerchies to tagger classes

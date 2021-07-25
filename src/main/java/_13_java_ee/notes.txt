@@ -1,0 +1,18 @@
+Java ee is extension of java se.
+justl like java has JLS (java language specification) & JVMS (java virtual machine specification), JAVA ee has also certain specification.
+
+jdk & JRE is implementation of java language specification
+we have oracle JDK, openJDK etc
+
+GlassFish (oracle's implementation of java ee) , WebSphere (IBM's implementation of java ee), WebLogic(oracles's implementation of java ee)
+
+servlet containers are sub set of java ee specification.
+servlet container aka web container aka servlet engine
+ex: tomcat, jetty
+servlet is simply a java class used for generating dynamic web apges.
+
+Eclipse foundation is the official owner of java ee.
+
+web server is differnt from application server.
+
+browser ---> webserver ---> servlet container (jsp & servlets)

@@ -1,0 +1,16 @@
+Model (for buisness logic)
+    Managers/services
+    DAO
+
+controller
+    servlets
+
+view
+    JSP
+
+Singleton disign pattern:
+    have a private constructor
+    create a static instance of that class
+    create a method 'getInstance()' which returns the only available instance of required class
+
+Head 5 design patterns - chaprter 5 (for diff variations in singleton implementation)

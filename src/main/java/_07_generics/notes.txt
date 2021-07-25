@@ -1,0 +1,231 @@
+class ClassName<T1, T2, T3,...>
+
+T1, T2, T3 : can be Type of instance variables, 
+T1, T2, T3 : can be Type of parameters, local variables, return types
+
+______________________________________________________
+interface Container<T>{
+    void set();
+    T get();
+}
+
+class Store<T>{
+    private T a;
+    public void setA(T a){
+        this.a = a;
+    }
+    public void getA(){
+        return this.a;
+    }
+}
+
+Container<String> stringStore = new Store<>();
+stringStore.set("java");
+stringStore.set("go");
+______________________________________________________
+
+Restrictions:
+    cannot be used with static context
+    cannot use primitives
+
+Type Erasure:
+    compiler is going to erase the type, ex:
+    consider this statement : Container<String> stringStore = new Store<>();
+    the type parameter 'String' is going to be erased. its going to be replaced with Object
+    Also, casting will be automatically done by compiler
+
+
+Flexibility:
+    List<Number> list = new ArrayList<>();
+    list.add(new Integer(23));
+    list.add(new Double(34.23));
+We can use a Number type OR any SUBCLASS of NUmber
+
+// FOllowing code gives RUNTIME error and NOT compilation time error.
+List[] array = new List[2];
+array[0] = new ArrayList()
+array[1] = new LinkedList()
+
+Bounded Type parameter: type paramter with one or more bounds
+Syntax: <TypeParameter extends bound1 & bound2 & ...> {...}
+class GenericsDemo<T extends List>{...} // the keyword 'extends' applies for both class and interface
+Valid bounds:
+    class
+    interface
+    enum 
+    paramterized type, ex: <T extends Comparable<T>>
+Invalid bounds:
+    primitives
+    arrays
+Specifics:
+    Type arguments must be sub type of all all bounds:
+        ex: 
+        GenericsDemo<T extends List & Seriazable>
+        GenericsDemo<List> test = new GenericsDemo<>(); // invalid as List does not implement Seriazable
+        GenericsDemo<ArrayList> test = new GenericsDemo<>(); // valid
+    if class is one of bounds, it must be first.
+    if first bound is class, remaining must be interfaces (there can be only one class bound)
+    if bound is final class & enums, type argument is bound itself
+______________________________________________________
+
+Raw type:
+    ex: List list = new ArrayList<>();
+    Raw type is supported in java ONLY to support legacy code.
+ONLY places where raw types can be used:
+    - class literals:
+        ex: List.class // valid
+            List<String>.class // invalid
+    - instance of operator
+        ex: if(o instance of Set){} //valid
+            if(o instance of Set<String>){} //invalid
+
+______________________________________________________ 
+
+what is generic type and parameterized type ?
+
+generic type:
+    Class Store<T>{...}
+parameterized type:
+    void foo(Store<String> stringStore){...}
+
+Like generic Type, EVEN (parameterized type) can specify that its (type argument) can be of unknown type
+
+    ex: void foo(Store<?> someStore)
+
+basically, parameterized type is generified here.
+
+Important keywords: 
+    'type-parameter', 'type-argument' and 'type of method parameter'
+
+
+class GenericsDemo<T>{
+    int getCOmmonElementCount(List<?> list1, List<?> list2){
+        list2.add(24); //compilation error, add method uses a class level type parameter(T) instead for the mehtod parameters(?) data type
+    }
+}
+______________________________________________________
+Unbounded wildcard
+    class Store<T> {...} // where T is unknown type
+    void foo(Store<String> stringStore){}
+    void foo(Store<Integer> intStore){}
+    void go(Store<?> someStore>){..} // read as: store of some type
+    can be used only as Type Argument not as type parameter, ex:
+        class Test<?, ?>{
+            private ? a; // '?' refers to 1st or 2nd parameter ??
+        }
+    cannot invoke methods that use class-level type parameters with any arguments except nulls
+
+
+______________________________________________________
+Invariance:
+    responsible for ensuring compile time type safety
+    Lets say Book extends Bookmark
+    But List<Book> is not subtype of List<BookMark>
+    Similarly due to invariance, Store<Book> is not subtype of Store<Bookmark>
+
+    why invariance ? consider both Book and Movie extends Bookmark,
+    
+    invalid example:
+    void go(ArrayList<BookMark> items){
+        items.add(new Movie()); // here we are able to add movies to list of books which is undesirable
+    }
+    go(new ArrayList<Book>())
+
+    However, we can do this:
+    ArrayList<BookMark> is a subtypeof List<Bookmark>
+    valid example:
+    void go(List<Book> items){
+        items.add(new Movie()); // throws error !
+        items.add(new Book());
+    }
+    go(new ArrayList<Book>())
+
+
+    Note: Generics are invariant, Arrays are co-variant, means:
+    If Book  is subtype of Bookmark, then Book[] is subtype of Bookmark[], hence we can do this:
+    Bookmark[] items = new Book[2]; example:
+    void go(BookMark[] items){
+        items[0] = new Movie(); // this wont throw any comilation error, but we get run time exception called: ArrayStoreException
+    }
+    go (new Book[2])
+
+
+Method invocation : explicit type argument specification
+
+class GenericDemo{
+    <T> void go(T Object) {...}
+}
+GenericsDemo gd = new GenericsDemo();
+gd.<double>go(1.0)
+
+
+Wildcard can be used ONLY as type argument not as type parameter
+But wildcard can be used as type of method parameters
+
+
+class level type parameter cannot be used used in static context
+______________________________________________________
+
+
+parameterized types that use wildcards  = wild card types
+
+If we want to consume data, then we need to go with lower bounded wildcard : use super keyword
+For upper bounded wildcard, use 'extends' keyword
+
+compiler's type safety restriction:
+can invoke methods that use class level type parameter only if arguments is of lower-bounded type or one of its subtype
+
+
+Lower bound is only for wildcards:  <T super bound> is illegal
+wilcard can have only single upper or lower bound:  < ? extends bound1 & bound2 & ... > is illegal
+
+
+If the input parameterized type produces data, then we should use upper bounded wildcard : <? extends bound>
+If the input parameterized type consumes data, then we should use lower bounded wildcard : <? super bound>
+
+When to use wildcard vs generic method ?
+    USe generic method if:
+        if dependencies exists among types of 1 or more method paramters and /or return type
+
+______________________________________________________
+
+Upper bounded wildcards
+    List<? extends BookMark>: List of some subtype of BookMark
+
+    Without wildcards, you'll face the problem of invariance
+    Due to invariance, we cant do:
+        List<BookMark> list = new Arraylist<Book>();
+    
+    HERE WE ARE PRODUCING DATA
+    So we use wildcards for harmless methods
+        void display(List<? extends BookMark> list){
+            for (BookMark b: list){
+                // list.add(new Movie()) // NOT PERMITTED !
+                sout(b)
+            }
+        }
+     
+Lower bounded wildcards
+    List<? super BookMark>: List of some supertype of BookMark, 
+        new ArrayList<Object>()
+        new ArrayList<BookMark>()
+    We cannot do:
+    List<? super BookMark> list = new Arraylist<Book>();
+    
+    here due to compiler's type safety restriction, wildcard, i.e., '?' acts as CONSUMER OF DATA
+    So we can invoke methods which use class level type parameter ONLY if argument is of lower bounded type or ONE OF IT'S SUBTYPES
+    
+    void aggregate(List<? super BookMark> list){
+        list.add(new BookMark(...));
+        list.add(new Book(...));
+        list.add(new Movie(...));
+    }
+    aggregate(new Arraylist<BookMark>); // valid invokation
+    aggregate(new Arraylist<Object>); // valid invokation
+
+
+producer and consumer concept:
+    for a method, if input parameter acts like producer of data, then we say <? extends className> : upper bounded wildcard
+    for a method, if input parameter acts like consumer of data, then we say <? super className> : lower bounded wildcard
+
+can invoke methods(like .add in list) that use class level type parameter only if arguments is of lower-bounded type or one of its subtype

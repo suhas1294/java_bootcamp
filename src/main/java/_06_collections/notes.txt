@@ -1,0 +1,187 @@
+Core collecions framework:
+
+what interfaces do we have ?
+    Collection
+        List
+        Set
+            SortedSet
+        Queue
+            Deque
+        
+    Map
+        SortedMap
+
+interfaces with Implementations:
+    Collection
+        List
+            Arraylist
+            LinkedList
+        Set
+            SortedSet
+                HashSet
+                Treeet
+                LinkedHashSet
+        Queue
+            Deque
+                ArrayDeque
+                LinkedList
+        
+    Map
+        SortedMap
+            HashMap
+            TreeMap
+            LinkedHashMap
+
+    All the above implementations are by default serializable, implement clone method and most of them allow nulls
+    None of them(their's methods) are synchoronized
+
+Legacy Implementations: (these are synchoronized)
+    Vector  (Alternative: ArrayList)
+    HashTable   (Alternative: HashMap)
+    Stack   (Alternative: ArrayDeque)
+______________________________________________________
+
+Collection interfaces:
+
+public interface Collection extends Iterable{
+    - Basic operations
+        add
+        remove
+        contains
+        size
+        isEmpty
+        Iterator iterator()
+    - Bulk operations
+        addAll
+        removeAll
+        retainAll
+        containAll
+        clear
+    - Array operations
+        toArray
+        toArray
+}
+
+______________________________________________________
+
+List interface:
+    useful when sequence/positioning matters (preserving order of insertion)
+    resizable linear array
+    ArrayList:
+        add operation: when element is added, other existing elements in array list are shifted right by one position
+        remove operation: when element is removed, other existing elements in array list are shifted left by one position
+        IMPORTANT: when we are iterating over a list using for loop, and inside loop, if we say ex: if (currenet_ement = 9){list.remove(9)}, then we will get concurrent exception : solution is to use iterator method
+
+        Iterator is simply an interface, to access an instance of iterator, we need to invoke method which is declared in iterator interface
+
+    LinkedList:
+        used where there is frequent add/remove ops
+        LinkedList implements both Interface and Deque interface
+
+    How ever, use LinkedList for list purpose and ArrayDeque for both (stack and queue & deque purposes)
+
+    ArrayDeque is faster than LinkedList as a (large) queue
+    DO not use ArrayList as FIFO
+
+
+    HashTable
+        Both HashMap and HashSet are based on HashTable
+        implements an associate array
+        each element is basically an association b/w key and value.
+        each key-value pais is also known as 'mapping'
+        hashtable also refered to as dictionary
+        operations: all happen in o(1)
+            insert key-value
+            search by key
+            remove by key
+        Internals of Hashtable:
+            - There is an array, each element of an array is referencing linkedlist which stores actual key-value mappings : ARRAY is not storing key-value mappings, LinkedList is doing that.
+            - Each slot in array is refered to as 'BUCKET'
+            - Each LinkedList can have multiple mappings to.
+            - for ops like search/insert/delete : most important task is to quickly locate target bucket(i.e., that array index) and then we need to search linkedlist at that particular bucket.
+            - To quickly locate the bucket for a given key-value mapping we use something called as hash function on the key.
+            bucket # = f(key, array-size)
+            - simple exampleof hash function would be (key % array-size), '%' helps in transforming large space into smaller one, smaller space would be size of array.
+            - ex: 15 = 315 % 25, here 25 is array size, key is 315 , 15 would be target bucket number for mapping with key '315'
+            - generally hashing involves two function:
+                hash = hash(key.hashCode())
+                bucket # = hash & (length-1)
+            - hash collission : when multiple same keys have same hashvalues
+            - ideal situation would be to have one mapping per bucket but practically not possible
+
+        TreeSet
+            red-black tree based implementation of NavigableTree Interface
+            internally uses tree map (just like hashset uses hashmap)
+            key = element, value = new Object()
+            unique
+            sorted
+            HashSet was concerned about only uniqueness, so we overrided hashcode and equals method, But TreeSet is concerned about both uniqueness and sorted result, hence we need to implement comparable
+                1st approach: Natural sorting: implement java.lang.comparable
+                2nd approach: java.util.Comparator
+
+                java.lang.comparable : 
+                    here custom class implements comparable interface
+                    has only one method compareTo, returns int value 
+                    returns 0, positive int or negative int
+                    0 means : duplicate element
+
+                    case 1 : there is only 1 element in treeset currently, When i want to add new element to tree set, the tree set will compare the new element to be added to the only existing element using compareTo function and returns a int, 0: duplicate, -ve : place before existing element, +ve : place after existing element
+
+                    case 2: multiple element already exists in tree set.
+                    tree set compares the to be added element to each and every element of current set and decides where to place it.
+                
+                java.util.comparator
+                    here we need to write one external class which implements comparator, ex:
+
+                    class TitleComparator implements Comparator{
+                        @Override
+                        public int compare(Object o1, Object o2){
+                            return ((CustomClass)o1).getTitle().compareTo((CustomClass)o2);
+                        }
+                    }
+
+                    // making use of above class in our class
+                    Set<CustomClass> set = new TreeSet<>(new TitleComparator()) 
+
+set -> hashset -> treeset, linkedHashset
+map -> hashmap -> treemap, LinkedHashMap
+
+TODO: LRV cache (implemented using LinkedHashMap)
+
+TODO: Decorator pattern
+
+______________________________________________________
+Summary
+______________________________________________________
+List
+    sequence /positioning
+    ArrayList:
+        fast random access O(n)
+        appending elements or deleting last elements O(1)
+    LinkedList:
+        frequent add/remove during iteration
+Queue:
+    when fast head/tail manipulations matter
+    LinkedList is on of queue's implementation
+    ArrayDequeue:
+        LIFO & FIFO O(1)
+        3x better then linkedlist for long queues
+Set:
+    when Uniqueness and very fast lookups matter
+    SortedSet and NavigableSet are its subset.
+    HashSet:
+        very fast lookup, insertion, deletion O(1)
+        ALWAYS OVERRIDE HASHCODE WHEN YOU OVERRIDE EQUALS
+    LinkedHashSet:
+        insertion order preserved + still very fast O(1)
+    TreeSet:
+        sorting + still pretty fast O(log(n))
+Map
+    HashMap
+    LinkedHashMap
+    TreeSet
+
+Arrays:
+    asList, sort, parallerSort, binarySearch, copyOf, equals
+Collections:
+    addAll, sort, binarySearch, reverse, swap, shuffle, unmodifiableCollection

@@ -1,0 +1,122 @@
+IO layer: there can be differenr sources and destinations to read and write data:
+    rest  API
+    file 
+    reading html data (scrapping)
+
+Different places from where data interaction has to happen:
+    file
+    network
+    console
+
+Diff ways of communication can happenL
+    sequential
+    random
+    bytes or group of bytes
+    binary or text
+
+io libraries:
+    java.io
+    java.nio (java 4 +)
+
+
+stream io:
+    byte stream
+    character stream
+
+
+Decorator pattern
+
+character encoding
+    files can be classifed into two catagories:
+        binaries (images, audio, video)
+        text (files with characters)
+    fundamentally all files are binary i.e., sequence of bytes, 8 bits  = 1 byte
+    from a computer hardware perspective, all files look alike, there is no clasification
+    Software would make a distinction:
+        text files: notepad, sublime
+        image: image viewer, adobe
+    We use hexadeimal number to represents bytes.
+        ex: 'a' => 61 (hex) => 01100001
+        same '01100001' can represent something else in an image file.
+        single byte can be any of 256 patterns (2^8)
+
+    processing text is complex: no of languages + no of ways to process (encoding scheme)
+    Every file uses some encoding schema to represent content
+    SO encoding schema is basically a algorithm which maps characters to hexadeimal numbers
+
+    Different encoding schemes:
+        ASCII
+        UCS-2
+        UTF-16
+        UTF-32
+    
+
+    character set and encoding schema is interchanbly used
+    
+    Unicode
+        Is maintained by unicode consortium
+        backward compatible with 7bit ascii (first 128 characters are same)
+        initial assumption was 16 bit : 65536 characters would sufice
+
+
+    stream: 
+        reading and writing is handled by streams
+        stream is basically connection between java program and a data source or sink
+        stream is represented by a class
+        stream is specific to type of source/sink, ex: if source/sink is a file, then we need to use a specific type of stream, similarly for network stream
+        stream can be either input stream or output stream
+
+    stream operation
+        open stream
+        read/write (in case of read, data will be read until end of stream is encountered)
+        close stream (usually done in finally block)
+    
+    stream classification:
+        byte stream
+            InputStream
+            OutputStream
+        character stream
+            Reader
+            Writer
+    (reason for having this classification is that java differenciate between processing character data and everything else)
+    InputStream and OutputStream are base classes for all byte oriented input and output streams respectively.
+    Reader and Writer are base classes for all byte oriented input and output texts respectively.
+
+
+    Byte streams:
+        read or write raw bytes serially
+        character streams are built on it.
+        InputStream:
+            - base abstract class for all byte input streams
+            - to read data in group of 8 bit bytes
+            - return -1 of EOF is detected
+            - all read calls are blocking
+        https://stackoverflow.com/questions/3971598/what-does-offset-mean-in-the-context-of-programming
+
+    FileOutputStream(Stirng filename) // creates a file if does not exist and if alread file exists, then it will override
+
+    General purpoe bridge streams:
+        InputStreamReader(InputStream i , Stirng charsetName)
+        outputStreamReader(OutputStream i , Stirng charsetName)
+    - InputStreamReader & outputStreamReader enable you to set character encoding
+    - InputStreamReader & outputStreamReader are general purpose classes for doing translations between byte streams and  character streams
+    - Hence parameters are abstract InputStream and OutputStream
+    - InputStreamReader will convert bytes to characters
+    - outputStreamReader will convert characters to bytes
+
+    ex: FileInputstream in = new FileInputstream("test.txt")
+    InputStreamReader reader = new InputStreamReader(in, "UTF-8")
+
+    FileReader and FileWriter extend them.
+    BufferReader and BufferedWriter can be chained to increase effeciency
+
+    try(BufferedReader in = new BufferedReader( new inputStreamReader( new FileInputStream("test.txt"), "UTF-8") )){
+        in.readLine()
+    }catch(Exception e){...}
+
+
+Serialization & Deserialization
+    - implement marker interface java.io.serailizable
+    - ObjectOutputStream(for Serialization) & ObjectInputStream(for Deserialization)
+    - ObjectOutputStream & ObjectInputStream implements ObjectOutput and ObjectInput respectively
+    - 

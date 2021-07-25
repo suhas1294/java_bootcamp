@@ -1,0 +1,59 @@
+How to make a class non instansiable ?
+    Make the constructor of class private.
+initializer block:
+    static initializer:
+        used when initialization needs multiple lines
+        ex: populating data structure
+        initialization while error handling
+        
+        static HashMap = new HashMap();
+        static{
+            map.put("something", "other")
+            map.put("anything", "other")
+        }
+
+        static Stuff stuff = initializeStuff()
+        private static Stuff initializeStuff(){
+            try{
+                return getStuff();
+            }catch(Exception e){...}
+            return null;
+        }
+        There can be multiple static initializer, will be executed in order in which they are written
+        cannot reference instance members
+    
+    Instance initializer
+        constructor initialize state, why instance initializer ?
+        Share code between multiple constructors
+        instance initializer code is copied to beginning to all constructors internally
+
+    final instance variable:
+        declaration
+        constructor
+        instance initializer
+    
+Consider static method factor instead of constructors
+
+class organization:
+    variables - static followed by instance
+    static initializer
+    static nested classes
+    static methods
+    instance initializer
+    constructors
+    instance nested class
+    methods
+
+Class should follow:
+    Single Responsibility Principle
+    < 2000 lines
+
+Methods:
+    short and focused
+    hardly 20 lines
+    grouping methods
+    mimimize scope of local variables
+    use more for loops instead of while loop
+
+
+Class diagram for a project : we use UML (Unified modelling language) : used to visualize design of a system

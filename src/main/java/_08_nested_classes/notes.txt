@@ -1,0 +1,87 @@
+purpose:
+    improve design of your classes
+
+Java program structure:
+    Class
+    variable declaration
+    constructor
+    methods
+    nested classes / nested interfaces
+
+class outer{
+    ...
+    class inner{
+        ...
+    }
+}
+
+practical example: its quite extensively used in collecions framework
+ex: Map interface uses a sub interface called Entry interface which has methods like getKey and getValue
+    Map (implements) HashMap 
+    HashMap has EntrySet nested class
+    EntrySet has inner class EntryIterator
+    EntryIterator has Node as inner classes
+
+Nested classes classification:
+    Innner Class (can access instance members of enclosing class)
+        Non static member classes
+        anonymous classes (part of static context)
+        local classes (part of static context)
+    static member classes (can never access instance members of enclosing class)
+        
+Outer class can access members of nested class (mutual accessibility)
+compilation: Outer.class & Outer$Nested.class
+compilation: Outer.class & Outer$1.class Outer$2.class in terms of anonymouss class
+
+
+Non-static member classes:
+    to use inner class object, we need to first create outer class
+    since inner class needs access to enclosing class, inner class will maintain a hidden reference to enclosing object(it takes space and time)
+    Due to hidden reference out class object will never be GCed until inner class is alive
+    common usecase : to define a ADAPTER, Adapter is used to produce diff views of the outer class object.
+    ex: in map class, we jave keySet(), values(), entrySet()
+
+    Restrictions:
+        cannot have static members
+
+
+Anonymous classes
+    Nameless
+    treeSet comparator
+        Set set = new TreeSet(new Comparator<String>{
+            public int compare(String s1, String s2){
+                return s1.length() - s2.length();
+            }
+        });
+    declared and instantiated at point of use
+
+    common uses:
+        Function object
+
+    Diamond notation does not work with anonymous classes
+    Anonymous class does not have access to outer class if it is written inside static method
+    cannot have named constructor
+    can use instance initializer
+
+    limitations:
+        cannot inherit from multiple types (i.e., we cannot inherit multiple interfaces)
+        we cannot extend one class and at same time implement an interface
+        client can invoke only members inherited from its supertype
+        instantiated only at point of declaration
+        can't be used with 'instanceof' tests or anywhere class name is required
+
+
+Local classes:
+    they are just like local variables
+    declared inside method.
+    instantiated inside method
+    can have multiple constructor and supertypes
+    short for readability
+    local variables from enclosing methods should be final
+    very rarely used.
+
+Static member classes:
+    favor static member classes over non static.
+    used when we dont need access to members of encosing instance
+    No hidden reference
+    accessed without enclosing object since it is just a static member

@@ -1,0 +1,348 @@
+Multi threading:
+    performing multiple activities in same time
+
+Topics
+    - java thread
+    - thread safety
+    - locking mechanism
+    - thread cooperation
+    - concurrent utilities (executor framework)
+
+Book: Java concurrency in practice by Brian Goetz
+
+intro:
+    Multi tasking ins not parallelism.
+    Process definition: gets own memory, file handles etc.
+    Thread definition: 
+        Single sequential flow of control within a process.
+        light-weight process
+        threads share processes wide resources eg: memory
+        Each thread hs its own: PC, stack and local variables.
+    Types of threads:
+        daemon
+            background threads for tasks sucj as GC
+        non-deamon
+            created within application
+            JVM creates main() thread
+    In java,thread is simple an instance of class java.lang.Thread OR one of its sub classes.
+    and the task, which is work is defined by a class which would implement the interface Runnable which is from java.lang.Runnable.
+    Thread is a class and Runnable is an interface.
+    Thread represents worker and Runnable represents work.
+
+    Steps of multi threading:
+        create task
+            Runnable task = new MyRunnable(); // MyRunnable implements Runnable interface
+            Runnable interface has exactly one method called run()
+        create thread with task:
+            Thread thread = new Thread(task); // 'new' state
+        Start therad:
+            thread.start() // nothing happens until start method is called. // 'runnable' state (ready to run)
+            // new call stack will be created for thread.
+            Now there is something called thread scheduler which is responsible for moving tasks from runnable state to running state.
+            Basically theread scheduler is the component which is responsible for switching between threads.
+        There is also state called 'blocked'
+        blocked - runnable - running (valid transition)
+        blocked - running (invalid transition)
+        runnable - blocked (invalid transition)
+        runnable - running - blocked (valid transition)
+        Thread scheduler makes decisions on who runs and how long they run
+        Never rely on scheduler's behavior
+        Once thread finishes its execution, its state will be 'dead' / 'terminated'
+    
+How a thread can ge treference to its own object?
+    Thread.currentThread(); // Thread[main, 5, main] : threadname, priority, thread group(obsolete)
+    you cannot say this.currentThread().getName() because this will be referencing to the task itself(which implements runable interface)
+    But we need reference to thread that is currently being run, hence use Thread.currentThread()    
+
+Yield:
+    Thread.currentThread().yield()
+    // it means, current thread is willing to yield its current use to CPU. its a hint to scheduler.
+
+join:
+    inside main method, lets say there are 2 threads: t1 and t2.
+    when we say t2.join(); // main thread will be suspended until t2 completes its execution.
+    t2.main(1) // within 1ms if t2 does not die, then main would return.
+
+Race condition: type of race condition: check-then-act
+Solution for race condition is to the emthod should be made to run as One single unit.
+Once a thread enters the method, it must be allowed to finish before any other thread can enter the method.
+This behavior is also called mutual exclusion.
+Only one thread is able to enter a method at any given instance of time.
+java's 'locking' is one of the builtin solution for ensuring atomic behaviour.
+Non thread safe obj : incorrect program : data corruption.
+If the object does not have any state at all then the object is thread safe.
+
+
+Java synchonizarion:
+    Synchonize access to shared mutable data.
+    Synchonization block has 2 parts:
+        1. lock (reference to an object)
+        2. code that needs to be guarded by this lock. (critical data that needs to be protected.)
+    public void go(){
+        non critical stuff
+        synchoronized(this){
+            critical statement 1
+            critical statement 2
+        }
+        non critical stuff
+    }
+
+    Every object has a single lock
+    every thread entering synchoronized block will automatically acquire the lock.
+
+    Then we have synchoronized method, its just shorthand for synchronized block.
+        synchoronized void makeWithdrawal(int amount){
+            if(balance >= amount){
+                balance -= amount;
+            }
+        }
+    LOCKS ARE PER OBJECT AND NOT PER METHOD.
+    static synchoronized methods use Class object for lock. SO every class has a single lock and every object has a single lock.
+    So we are using synchonizartion to coordinate access to variable.
+    Synchonize everywhere variable is used.
+    Synchonization = mutual exclusion + reliable thread communication.
+    guard same share mutable variable with same lock. Example:
+        public class BankAccount implements Runnable{
+            public synchronized void makeWithdrawal(int amount){
+                if(balance >= amount){
+                    balance -= amount;
+                }
+            }
+            public void deposit(int amount){
+                String s = new String();
+                synchronized(s){
+                    balance  += amount
+                }
+            }
+        }
+        In above code, synchronized method uses BankAccount as lock in makeWithdrawal method.(the obj on which method has been invoked.)
+        However the deposit method is using a string object reference as a lock.
+        Two different locks are being used to guard same variable which should not be done.
+
+Java memory Model (JMM)
+    Happens before ordering.
+        program order
+        lock - got to be same lock
+        volatile variable
+        start()
+        join()
+        interrupt()
+        Object.finalaize() (onvoked by GC)
+        transitivity.
+
+volatile variables:
+    its a modifer used with variables.
+    it helps ensure memory visibility, i.e., once a particular thread writes a value to volatile variable, it is guranteed that a particular value would be visible to all subsequent reads of that variables from all threads.
+    volatile variables are always stored in main memory. (NOT cache, not registers)
+    used with shared mutable variables. (cannot be used with local variables)
+
+synchronized vs volatile:
+
+volatile code block:
+    public class StopThread{
+        private static volatile boolean stop;
+        public static void main(String[] args){
+            new Thread(new Runnable(){
+                public void run(){
+                    while(!stop){ sout("in while...")}
+                }
+            }).start();
+        }
+
+        TimeUnit.SECONDS.sleep(1);
+        stop=true;
+    }
+
+synchronized code block:
+    public class StopThread{
+        private static boolean stop;
+        private static synchronized void requestStop(){stop = true;}
+        private static synchronized stop(){return stop;}
+        public static void main(String[] args){
+            new Thread(new Runnable(){
+                public void run(){
+                    while(!stop){ sout("in while...")}
+                }
+            }).start();
+        }
+
+        TimeUnit.SECONDS.sleep(1);
+        requestStop();
+    }
+
+Synchonization : memory visibility + atomicity(locking capibility)
+volatile: ONLY memory visibility
+
+Automic variables:
+    import java.util.concurrent.atomic.AtomicLong;
+    public class IDGenerator{
+        private AtomicLong id = new AtomicLong();
+        public long getId(){
+            return id.incrementAndGet();
+        }
+    }
+    Automic variables work on the principle of 'compare and swap' - it works on field level and not block level as in synchonization.
+    while synchonization works on block level, it can be costly since it has to alter state of variables from blocked - runnable - running and viceversa.
+    Atomic variables dont work in that way.
+
+Synchonization best practices:
+    use it everywhere shared mutable is used.
+    use it everywhere variable is used.
+    guard same shared mutable variable with same lock.
+
+
+Thread cooperation and management
+concern addressed so far:
+    race condition: solved by synchoronized and atomic variables
+    memory visibility: volatile
+new concerns:
+    Thread cooperation (interdependencies of threads)
+        naive approach (using volatile variable)
+        wait() and notify()
+        java5 concurrency utilities
+    Thread management 
+        java5 concurrency utilities (Executor framework) : when dealing with large scale systems.
+
+
+Thread interruption:
+    every thread has a boolean interrupted status
+    interrupt() : sets interrupted status to true
+
+threads blocked due to following reasons are un-interruptable:
+    stream-io: when a thread is waiting for data from some source.
+    synchronized locks
+    NIO
+
+When the threads cannot be interupted incase they are in waiting state for a lock, then we need to use explicit lock.
+syntax: 
+    import java.util.concurrent.locks.*;
+    ...
+    Lock lock = new ReentrantLock();
+    ...
+    lock.lock();
+    try{
+        // some critical section
+    }catch(){
+        
+    }finally{
+        lock.unlock()
+    }
+
+intrinsic locks are implicitly released when when get out of synchonized blocks.
+
+______________________________________________________
+
+Concurrent Utilities:
+    Executor framework (ExecutorService, Callable, future)
+    Synchronizers (countDownLatch)
+    Concurrent collections (BLockingQueue)
+
+Executor framework (ExecutorService, Callable, future)
+    what we saw unitl now is thread-per-task approach (for every new task, there is a new thread)
+    Its a powerful and flexible task execution framework
+    It consists of:
+        - Thread pool (pool of thread in work queue)
+        - work queue (contains all tasks that needs to be executed) (later we see a special type of task called callable)
+
+    public interface Executor(){
+        void execute(Runnable command)
+    }
+
+    class ThreadPerTaskExecutor implements Executor{
+        public void execute(Runnable r){
+            new Thread(t).start();
+        }
+    }
+    //client code:
+    Executor executor = new ThreadPerTaskExecutor();
+    executor.execute(someRunnable)
+    executor.execute(someOtherRunnable)
+
+    //SingleThreaded executor
+    // decouple task submission from task execution
+    class SingleThreadedExecutor implements Executor{
+        public void execute(Runnable r){
+            new r.run();
+        }
+    }
+
+    // some of the most famous built in methods that java.util.concurrent.Executor interface provides:
+    - newFIxedThreadPool        (implements ExecutorService which extends Executor interface)
+    - newCachedThreadPool       (implements ExecutorService which extends Executor interface)
+    - newSingleThreadPool       (implements ExecutorService which extends Executor interface)
+    - newScheduledThreadPool    (implements ScheduledExecutorService which extends ExecutorService)
+
+    Note that executors returned by these methods are instanced of a class called ThreadPoolExecutor
+        
+
+newFIxedThreadPool:
+    creates fixed number of threads
+    If pool size is not yet reached, and if there is a new task then a new thread is created to execute the task even if there is an idle thread. But once pool size is reached, no new thread is created.
+    new thread added if thread dies due to exception.
+    pool size re-configurable
+newCachedThreadPool:
+    Tasks are not queued.
+    there is no specific order in which task is executed, if thread is idle it takes up some task which may not be in the queue and executes.
+    thread dies after 60 seconds if there is no task/ if its idle for 60sec.
+newSingleThreadPool = newFIxedThreadPool(1)
+newScheduledThreadPool:
+    fixed size pool for delayed and periodic task execution.
+
+ExecutorService extends Executor interface.
+    - better task submission method: 
+        ExecutorService eecutor = Executors.newFIxedThreadPool(10);
+        Future future = executor.submit(task); // here task can be Runnable or Callable
+        Callable: better task representation, used for delayed tasks.
+        future.get blocks until task is completed. // its kind of equivalent to wait()
+        If task is Callable, get() returns result.
+        If task is Runnable, get() returns null.
+        How callable interface looks like:
+            public interface Callable<V>{
+                V call() throws Exception;
+            }
+        So a task would implement Calleble. note that run() method in Runnable interface does not throw (checked)exception.
+    -Lifecycle
+        Running
+        Shutting down: shutDown() or shutDownNow()
+            once these methods are invoked, no new tasks will be accepted by ExecutorService.
+            shudown() does it gracefully, and shutdownNow() abruptly interrupts active thread and returns queue of pending tasks so that it can be executed in future.
+        terminated
+            isTerminated()
+    - future instance(returned by executor.submit()) describes life cycle of a task
+        public interface Future<V>{
+            boolean cancel(boolean mayInteruptIfRunning)
+            boolean isCancelled()
+            boolean isDone()
+            V get()
+            V get(long timeout, TimeoutUnit unit)
+        }
+        
+
+
+
+
+
+
+
+
+
+
+______________________________________________________
+Summary:
+    extends Thread
+    extends Runnable
+    override run()
+    what is lock in java multithreading
+    synchoronized
+    volatile
+    AutomicLong
+    wait() & notify() (commonly used with while loop)
+    interrupt() & isAlive()
+    explicit locks
+    Executor
+    ExecutorService
+    execute() vs run()
+    Callable vs Runnable
+    Future
+    get(), cancel()
+    ExecutorService.invokeAll

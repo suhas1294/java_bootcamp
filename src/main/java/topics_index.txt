@@ -1,0 +1,27 @@
+static
+    class
+    variable
+    method
+final
+    class
+    variable
+    method
+    final but not constant
+instance
+overloading
+access modifiers
+    private
+    public
+    default
+    protected
+inheritance
+    super method invoking
+polymorphism
+    reference type
+    object type
+    method overriding
+abstraction
+interface
+    default and static methods
+list of what all can be there in abstract class & interface
+

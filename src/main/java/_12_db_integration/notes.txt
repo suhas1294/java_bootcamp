@@ -1,0 +1,30 @@
+Design database:
+    Normalization (to address redundency)
+    Normalization rules:
+        1NF - first normal form
+        2nf
+        3nf
+        bcnf(boyce codd normal form)
+        4nf, 5nf, 6nf
+
+    EER diagram: Enhanced Entity diagram
+
+    SQL statements classification:
+        DML (data manipulation language): select, insert, udpate, delete
+        DDL (data definition language):
+            create database, create table, create index
+            alter table, alter index,
+            drop database, drop table, drop index
+    
+    JDBC - its an api
+        It can be used to interact with Databases(Mysql), tabular(excel sheet) etc
+        We need to use JDBC driver to connect JDBC api to actual database.
+        We have JDBC for different purposes:
+            JDBC for Mysql
+            JDBC for Oracle server
+            JDBC for ..
+        Drivers can be classified into : 
+            type1 (jdvbc-odbc bridge driver) 
+            type2 (jdbc native api driver)
+            type3 (jdbc net driver)
+            type4 (jdbc driver)
